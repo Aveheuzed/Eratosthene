@@ -1,29 +1,41 @@
 #!/usr/bin/env python3
-from time import clock
+from time import perf_counter_ns
+
+def ceil(D, d) :
+    # returns ceil(D/d), without using floats
+    q,r = divmod(D, d)
+    if not r :
+        return q
+    return q+1
 
 bornesup = int(input("Borne supérieure de recherche (exclue) : "))
 maxsearch = int(bornesup**0.5)
 
-a = clock()
-
 nombres = 0 # bits à 0 pour "pas barré"
 
-p = 2
-while p < maxsearch:
-    if nombres & 1<<p :
-        p += 1
-        continue
-    bigmask = 0
-    for n in range(p, bornesup) :
-        if n*p >= bornesup :
-            break
-        if nombres & (1<<n) :
-            continue
-        bigmask |= 1<<(n*p)
-    nombres |= bigmask
-    p += 1
+a = perf_counter_ns()
 
-b = clock()
-print(b-a)
-#print(bin(nombres))
-#print(*[x for x in range(2, bornesup) if not (nombres & 1<<x)], sep="\n")
+p = 2
+while p < maxsearch :
+   bigmask = 0
+   for shiftnp in (1<<(n*p) for n in range(p, ceil(bornesup,p)) if not (nombres & (1<<n))) :
+       bigmask |= shiftnp
+   nombres |= bigmask
+
+   p += 1
+   while nombres & 1<<p :
+       p += 1
+
+b = perf_counter_ns()
+
+nprem = 0
+i = 2
+nombres >>= 2
+while i < bornesup :
+    if not (nombres & 1) :
+        nprem += 1
+    nombres >>= 1
+    i += 1
+print(f"Il y a {nprem:_} nombres premiers < {bornesup:_}")
+print(f"Temps d'exécution : {b-a:_} ns")
+del nombres
