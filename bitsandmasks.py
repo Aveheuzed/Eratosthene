@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from time import perf_counter_ns
+from time import perf_counter
 
 def ceil(D, d) :
     # returns ceil(D/d), without using floats
@@ -13,7 +13,7 @@ maxsearch = int(bornesup**0.5)
 
 nombres = 0 # bits à 0 pour "pas barré"
 
-a = perf_counter_ns()
+a = perf_counter()
 
 p = 2
 while p < maxsearch :
@@ -26,7 +26,7 @@ while p < maxsearch :
    while nombres & 1<<p :
        p += 1
 
-b = perf_counter_ns()
+b = perf_counter()
 
 nprem = 0
 i = 2
@@ -37,5 +37,5 @@ while i < bornesup :
     nombres >>= 1
     i += 1
 print(f"Il y a {nprem:_} nombres premiers < {bornesup:_}")
-print(f"Temps d'exécution : {b-a:_} ns")
+print(f"Temps d'exécution : {b-a:_.2} s")
 del nombres
