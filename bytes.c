@@ -6,7 +6,8 @@
 
 
 int main() {
-  USLI bornesup, maxsearch=1, p, totprem=0, i;
+  USLI bornesup, maxsearch=1, totprem=0;
+  register USLI i, p;
   USC *nombres = NULL;
   printf("Borne supérieure (exclue) : ");
   scanf("%lu", &bornesup);

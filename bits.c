@@ -21,10 +21,10 @@ static inline USLI eval_tablesize(USLI bornesup) {
 
 
 int main() {
-  USLI bornesup, maxsearch=1, /*p,*/ totprem=0, i, q, m;
+  USLI bornesup, maxsearch=1, /*p,*/ totprem=0, i;
+  register USLI q, m;
+  register TYPEOFTABLE r, p;
   TYPEOFTABLE *nombres = NULL;
-
-  TYPEOFTABLE r, p;
 
   printf("Borne supérieure (exclue) : ");
   scanf("%lu", &bornesup);
