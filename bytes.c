@@ -4,37 +4,34 @@
 #define USLI unsigned long int
 #define USC unsigned char
 
+static inline void nouveau_premier(USLI *const totprem, const USLI p) {
+  (*totprem)++;
+  printf("%lu\n",p);
+}
 
 int main() {
   USLI bornesup, maxsearch=1, totprem=0;
   register USLI i, p;
-  USC *nombres = NULL;
   printf("Borne supérieure (exclue) : ");
   scanf("%lu", &bornesup);
-  nombres = malloc(bornesup*sizeof(USC));
+  USC *const nombres = calloc(bornesup, sizeof(USC));
   if (nombres == NULL) {
     exit(1);
   }
 
-  do {
-    maxsearch ++;
-  } while (maxsearch*maxsearch <= bornesup);
-  maxsearch --;
+  while ((++maxsearch)*maxsearch <= bornesup);
+  maxsearch--;
 
-  for (i=0; i<bornesup; i++) {
-    nombres[i] = 0;
-  }
-
-  for (p=2; p<=maxsearch; p++) {
-    if (nombres[p]) {
-      continue;
-    }
-    for (i=p*p; i<bornesup; i+=p){
-      nombres[i] = 1;
+  for (p=2; p<maxsearch; p++) {
+    if (!nombres[p]) {
+      nouveau_premier(&totprem, p);
+      for (i=p*p; i<bornesup; i+=p){
+        nombres[i] = 1;
+      }
     }
   }
-  for (p=2; p<bornesup; p++) {
-    if (nombres[p] == 0) {totprem++;printf("%lu\n",p);}
+  for (; p<bornesup; p++) {
+    if (!nombres[p]) nouveau_premier(&totprem, p);
   }
   free(nombres);
   printf("Il y a %lu nombres premiers inférieurs à %lu\n",

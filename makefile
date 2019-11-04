@@ -1,7 +1,7 @@
 all : bits bytes
 
 bits : bits.c
-	gcc bits.c -o bits
+	gcc -O3 -Wno-unused-result bits.c -o bits
 
 bytes : bytes.c
-	gcc bytes.c -o bytes
+	gcc -O3 -Wno-unused-result bytes.c -o bytes
