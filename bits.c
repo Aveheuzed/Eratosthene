@@ -20,9 +20,9 @@ static inline USLI eval_tablesize(const USLI bornesup) {
 
 
 int main() {
-  USLI bornesup, totprem=0;
-  register USLI q, m;
-  register unsigned char r, p;
+  USLI bornesup, totprem=0, maxsearch=1;
+  USLI q, m;
+  unsigned char r, p;
 
   printf("Borne supérieure (exclue) : ");
   scanf("%lu", &bornesup);
@@ -34,8 +34,10 @@ int main() {
     exit(1);
   }
 
+  while ((++maxsearch)*maxsearch*BITSPERSLOT <= imax);
+
   write1(nombres, 0, 0); write1(nombres, 0, 1);
-  for (q=0; q<imax; q++) {
+  for (q=0; q<=maxsearch; q++) {
     for (r=0; r<BITSPERSLOT; r++) {
       if (!read(nombres, q, r)) {
         totprem++;
@@ -52,6 +54,14 @@ int main() {
           m += p/BITSPERSLOT;
           p %= BITSPERSLOT;
         }
+      }
+    }
+  }
+  for(;q<imax;q++) {
+    for(r=0; r<BITSPERSLOT; r++) {
+      if (!read(nombres, q, r)) {
+        totprem++;
+        printf("%lu\n",BITSPERSLOT*q+r);
       }
     }
   }

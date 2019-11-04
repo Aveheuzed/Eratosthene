@@ -11,7 +11,7 @@ static inline void nouveau_premier(USLI *const totprem, const USLI p) {
 
 int main() {
   USLI bornesup, maxsearch=1, totprem=0;
-  register USLI i, p;
+  USLI i, p;
   printf("Borne supérieure (exclue) : ");
   scanf("%lu", &bornesup);
   USC *const nombres = calloc(bornesup, sizeof(USC));
@@ -25,8 +25,12 @@ int main() {
   for (p=2; p<maxsearch; p++) {
     if (!nombres[p]) {
       nouveau_premier(&totprem, p);
-      for (i=p*p; i<bornesup; i+=p){
-        nombres[i] = 1;
+      for (i=bornesup/p; i>=p; i--){
+        if (!nombres[i]) {
+          nombres[p*i]++;
+          // on sait maintenant qu'on ne passe qu'une unique fois sur chaque nombre
+          // non premier, d'où le ++ au lieu du =1 (supposé plus lent)
+        }
       }
     }
   }
