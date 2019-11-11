@@ -20,7 +20,6 @@ int main() {
   }
 
   while ((++maxsearch)*maxsearch <= bornesup);
-  maxsearch--;
 
   for (p=2; p<maxsearch; p++) {
     if (!nombres[p]) {
