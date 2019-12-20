@@ -1,5 +1,3 @@
-#!/bin/bash
-
 all : bits bytes
 
 bits : bits.c
