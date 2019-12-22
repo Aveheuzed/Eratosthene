@@ -2,15 +2,23 @@
 #include <stdio.h>
 
 #define USLI unsigned long int
+#define USC unsigned char
+
 #define TYPEOFTABLE unsigned int //USLI pose problème, je sais pas pq...
 #define BITSPERSLOT (sizeof(TYPEOFTABLE)*8)
 
-static inline void write1(TYPEOFTABLE *const table, const USLI base, const TYPEOFTABLE offset) {
-  table[base] |= (1<<offset);
+typedef struct nombre nombre;
+struct nombre {
+  USLI base;
+  USC offset;
+};
+
+static inline void write1(TYPEOFTABLE *const table, const nombre nbr) {
+  table[nbr.base] |= (1<<nbr.offset);
 }
 
-static inline TYPEOFTABLE read(const TYPEOFTABLE *const table, const USLI base, const TYPEOFTABLE offset) {
-  return (table[base]) & (1<<offset);
+static inline TYPEOFTABLE read(const TYPEOFTABLE *const table, const nombre nbr) {
+  return (table[nbr.base]) & (1<<nbr.offset);
 }
 
 static inline USLI eval_tablesize(const USLI bornesup) {
@@ -18,11 +26,18 @@ static inline USLI eval_tablesize(const USLI bornesup) {
   return ++result; // pour gérer l'éventuel reste de la division
 }
 
+static inline USLI convert(const nombre nbr) {
+  return (nbr.base*BITSPERSLOT)+(nbr.offset);
+}
+
+static inline void nouveau_premier(USLI *const totprem, const nombre p) {
+  (*totprem)++;
+  printf("%lu\n",convert(p));
+}
 
 int main() {
   USLI bornesup, totprem=0, maxsearch=1;
-  USLI q, m;
-  unsigned char r, p;
+  nombre p,i;
 
   printf("Borne supérieure (exclue) : ");
   scanf("%lu", &bornesup);
@@ -31,37 +46,34 @@ int main() {
   TYPEOFTABLE *const nombres = calloc(imax, sizeof(TYPEOFTABLE));
   if (nombres == NULL) {
     printf("Pas assez de mémoire !\n");
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
   while ((++maxsearch)*maxsearch*BITSPERSLOT <= imax);
 
-  write1(nombres, 0, 0); write1(nombres, 0, 1);
-  for (q=0; q<=maxsearch; q++) {
-    for (r=0; r<BITSPERSLOT; r++) {
-      if (!read(nombres, q, r)) {
-        totprem++;
-        printf("%lu\n",BITSPERSLOT*q+r);
+  write1(nombres, (nombre) {0, 0}); write1(nombres, (nombre) {0, 1});
+  for (p.base=0; p.base<=maxsearch; p.base++) {
+    for (p.offset=0; p.offset<BITSPERSLOT; p.offset++) {
+      if (!read(nombres, p)) {
+        nouveau_premier(&totprem, p);
 
-        // (q*BITSPERSLOT+r)**2
-        m = q*q*BITSPERSLOT + 2*q*r + (r*r)/BITSPERSLOT;
-        p = (r*r)%BITSPERSLOT;
+        i.base= p.base*p.base*BITSPERSLOT + 2*p.base*p.offset + (p.offset*p.offset)/BITSPERSLOT;
+        i.offset = (p.offset*p.offset)%BITSPERSLOT;
 
-        while (m<imax) {
-          write1(nombres, m, p);
-          p += r;
-          m += q; // p += q*BITSPERSLOT+r
-          m += p/BITSPERSLOT;
-          p %= BITSPERSLOT;
+        while (i.base<imax) {
+          write1(nombres, i);
+          i.offset += p.offset;
+          i.base += p.base;
+          i.base += i.offset/BITSPERSLOT;
+          i.offset %= BITSPERSLOT;
         }
       }
     }
   }
-  for(;q<imax;q++) {
-    for(r=0; r<BITSPERSLOT; r++) {
-      if (!read(nombres, q, r)) {
-        totprem++;
-        printf("%lu\n",BITSPERSLOT*q+r);
+  for(;p.base<imax;p.base++) {
+    for(p.offset=0; p.offset<BITSPERSLOT; p.offset++) {
+      if (!read(nombres, p)) {
+        nouveau_premier(&totprem, p);
       }
     }
   }
