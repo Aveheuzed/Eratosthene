@@ -79,6 +79,6 @@ int main() {
     }
   }
   free(nombres);
-  printf("Il y a %lu nombres premiers inférieurs à %lu\n",
+  fprintf(stderr, "Il y a %lu nombres premiers inférieurs à %lu\n",
   totprem, 32*imax);
 }
