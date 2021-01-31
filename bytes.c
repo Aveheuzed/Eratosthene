@@ -1,20 +1,17 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 
-#define USLI unsigned long int
-#define USC unsigned char
 
-#define LEN_PREM_BLOCK 256 // max : 256 (must fit in an USC)
-
-static inline void nouveau_premier(USLI *const totprem, const USLI p) {
+static inline void nouveau_premier(uintmax_t *const totprem, const uintmax_t p) {
   (*totprem)++;
   printf("%lu\n",p);
 }
 
-static inline void flush(USC *const nombres, const USLI bornesup, const USLI premiers[], USC *const nb_prem) {
-  USLI prod, inombres;
-  const USLI stop_inombres=bornesup/premiers[*nb_prem-1];
-  USC iprem;
+static inline void flush(uint8_t *const nombres, const uintmax_t bornesup, const uintmax_t premiers[], uint8_t *const nb_prem) {
+  uintmax_t prod, inombres;
+  const uintmax_t stop_inombres=bornesup/premiers[*nb_prem-1];
+  uint8_t iprem;
   for (inombres=bornesup/premiers[0]; inombres>stop_inombres; inombres--) {
     if (!nombres[inombres]) {
       for (iprem=0; iprem<(*nb_prem); iprem++) {
@@ -36,23 +33,23 @@ static inline void flush(USC *const nombres, const USLI bornesup, const USLI pre
 }
 
 int main() {
-  USLI bornesup, maxsearch=1, totprem=0;
-  USLI i, p;
-  USLI running_prem[LEN_PREM_BLOCK];
+  uintmax_t bornesup, maxsearch=1, totprem=0;
+  uintmax_t i, p;
+  uintmax_t running_prem[UINT8_MAX];
   printf("Borne supérieure (exclue) : ");
   scanf("%lu", &bornesup);
-  USC *const nombres = calloc(bornesup, sizeof(USC));
+  uint8_t *const nombres = calloc(bornesup, sizeof(uint8_t));
   if (nombres == NULL) {
     printf("Pas assez de mémoire !\n");
     exit(EXIT_FAILURE);
   }
-  USC n_prem_block=0;
+  uint8_t n_prem_block=0;
 
   while ((++maxsearch)*maxsearch <= bornesup);
 
   for (p=2; p<maxsearch; p++) {
     if ((n_prem_block && (running_prem[0]*running_prem[0] <= p)) ||
-        (n_prem_block == LEN_PREM_BLOCK))
+        (n_prem_block == UINT8_MAX))
       flush(nombres, bornesup, running_prem, &n_prem_block);
 
     if (!nombres[p]) {
